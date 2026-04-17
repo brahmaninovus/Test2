@@ -26,7 +26,7 @@ const NoteInput = ({setNotes}) => {
         </div>
       </div>
       <div className="add-new-page__action">
-        <button className="action" type="button" title="simpan" onClick={()=>{
+        <button className="action" type="button" title="Simpan" onClick={()=>{
           addNote({title, body})
           setNotes(getAllNotes())
           nav('/')}}>

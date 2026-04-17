@@ -14,6 +14,20 @@ const NotePage = ({notes, setNotes}) => {
       <h3 className='detail-page__title'>{note.title}</h3>
       <p className='detail-page__createdAt'>{showFormattedDate(note.createdAt)}</p>
       <div className='detail-page__body'>{note.body}</div>
+      <div className='detail-page__action'>
+        <button className="action" type="button" title="Arsipkan" onClick={()=>{
+          archiveNote(name)
+          setNotes(getAllNotes())
+          nav('/')}}>
+          <ion-icon size="large" name="checkmark-outline"></ion-icon>
+        </button>
+        <button className="action" type="button" title="Hapus" onClick={()=>{
+          deleteNote(name)
+          setNotes(getAllNotes())
+          nav('/')}}>
+          <ion-icon size="large" name="trash-outline"></ion-icon>
+        </button>
+      </div>
     </section>
   )
 }

@@ -1,27 +1,20 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useNotes } from '../context/NotesContext'
 import NoteList from '../components/NoteList'
 
-const MainPage = ({ type }) => {
-  const [search, setSearch] = React.useState('')
+const MainPage = ({ note, type }) => {
+  const [search, setSearch] = useState('')
   const nav = useNavigate()
-  const { activeNotes, archivedNotes } = useNotes()
-
-  // Filter notes based on type and search query
-  const filteredNotes = useMemo(() => {
-    const notesToFilter = type === 'active' ? activeNotes : archivedNotes
-    return notesToFilter.filter(note => 
-      note.title.toLowerCase().includes(search.toLowerCase())
-    )
-  }, [type, activeNotes, archivedNotes, search])
+  const filteredNotes = useMemo(
+    () => note.filter((item) => item.title.toLowerCase().includes(search.toLowerCase())),
+    [note, search]
+  )
 
   return (
     <section className='homepage'>
       <h1>
         {type === "active" ? 'Catatan Aktif' : 'Catatan Arsip'}
       </h1>
-      <h2>hi</h2>
       <section className='search-bar'>
         <input
           type="text"
@@ -31,7 +24,7 @@ const MainPage = ({ type }) => {
         />
       </section>
       <section className='notes-list'>
-        <NoteList notes={filteredNotes} type={type} />
+        <NoteList notes={filteredNotes} />
       </section>
       <div className='hompage__action'>
         <button className='action' title='Tambah' type='button' onClick={() => nav('/notes/new')}>

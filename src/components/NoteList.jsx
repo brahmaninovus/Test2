@@ -11,12 +11,15 @@ const NoteList = ({notes}) => {
     <>
       {currNotes.map((item)=>(
         <NoteItem
-        id={item.id}
-        tittle={item.tittle}
-        body={item.body}
-        archived={item.archived}
-        createdAt={showFormattedDate(item.createdAt)}/>
+          id={item.id}
+          title={item.title}
+          body={item.body}
+          archived={item.archived}
+          createdAt={showFormattedDate(item.createdAt)}
+        />
       ))}
     </>
   )
 }
+
+export default NoteList
