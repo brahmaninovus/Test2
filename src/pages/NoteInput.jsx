@@ -9,8 +9,6 @@ const NoteInput = ({setNotes}) => {
 
   return (
     <section className="add-new-page">
-      //test
-      <h1>hi</h1>
       <div className="add-new-page__input">
         <input 
           className="add-new-page__input__title" 
