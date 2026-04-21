@@ -7,6 +7,7 @@ const NoteList = ({notes}) => {
   const location = useLocation()
   const currNotes = location.pathname === '/'
   ? notes.filter((note) => !note.archived) : notes.filter((note) => note.archived) 
+  
   return (
     <>
       {currNotes.map((item)=>(
