@@ -11,12 +11,12 @@ interface ItemProps {
 
 export const NoteItem = ({id, title, body, archived, createdAt}:ItemProps) => {
   return (
-    <div>
+    <article className='note-item'>
       <h3>
         <Link to={`/notes/${id}`}>{title}</Link>
       </h3>
       <p className='note-item__createdAt'>{createdAt}</p>
       <p className='note-item__body'>{body}</p>
-    </div>
+    </article>
   )
 }

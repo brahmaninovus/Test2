@@ -26,7 +26,7 @@ const MainPage = ({ note, type }) => {
       <section className='notes-list'>
         <NoteList notes={filteredNotes} />
       </section>
-      <div className='hompage__action'>
+      <div className='homepage__action'>
         <button className='action' title='Tambah' type='button' onClick={() => nav('/notes/new')}>
           <ion-icon name="add-outline"></ion-icon>
         </button>

@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { addNote, allNotes, getAllNotes } from '../utils/local-data'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { addNote, getAllNotes } from '../utils/local-data'
 
 const NoteInput = ({setNotes}) => {
   const [title, setTitle] = useState('')
