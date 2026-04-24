@@ -1,18 +1,28 @@
 import { useState, useContext } from 'react';
-import { link } from 'react-router-dom';
-import { login } from '../api/notes-api';
-import { AuthContext } from '../contexts/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { login } from "../../utils/api";
+import { AuthContext } from '../../contexts/AuthContext';
 
 export default function LoginPage() {
-  const { loginSuccess } = useContext(AuthContext);
+  const { loginSuccess, setUser } = useContext(AuthContext);
+  const nav = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   async function handleSubmit(e) {
     e.preventDefault();
     const result = await login({ email, password });
-    if (!result.error) {
+    console.log('LOGIN RESULT:', result); 
+    if (result.status === 'success') {
       loginSuccess(result.data);
+      const savedName = localStorage.getItem('name');
+      setUser({
+        name: savedName || email.split('@')[0],
+        email
+      });
+      nav('/');
+    } else {
+      alert(result.message); // tampilkan error API
     }
   }
 

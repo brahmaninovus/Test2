@@ -1,13 +1,42 @@
-import React from 'react'
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState, useContext } from 'react'
+import { useNavigate, useParams } from "react-router-dom";
 import { showFormattedDate } from '../utils';
-import { archiveNote, deleteNote, getAllNotes } from '../utils/local-data';
+import { getNote, deleteNote, archiveNote, unarchiveNote } from '../utils/api';
+import { AuthContext } from '../contexts/AuthContext';
 
-const NotePage = ({notes, setNotes}) => {
-  const {name} = useParams()
+const NotePage = () => {
+  const { id } = useParams()
   const nav = useNavigate()
-  const note = notes.find((item) => item.id === name)
+  const { token } = useContext(AuthContext)
+  const [note, setNote] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchNote() {
+      const response = await getNote(token, id)
+
+      if (response.status === 'success') {
+        setNote(response.data)
+      }
+
+      setLoading(false)
+    }
+
+    fetchNote()
+  }, [id, token])
+
+  if (loading) return <p>Loading...</p>
   if (!note) return <p>Note not found</p>
+
+  async function handleDelete() {
+    await deleteNote(token, id)
+    nav('/')
+  }
+
+  async function handleArchive() {
+    await archiveNote(token, id)
+    nav('/')
+  }
 
   return (
     <section className='detail-page'>
@@ -15,16 +44,21 @@ const NotePage = ({notes, setNotes}) => {
       <p className='detail-page__createdAt'>{showFormattedDate(note.createdAt)}</p>
       <div className='detail-page__body'>{note.body}</div>
       <div className='detail-page__action'>
-        <button className="action" type="button" title="Arsipkan" onClick={()=>{
-          archiveNote(name)
-          setNotes(getAllNotes())
-          nav('/')}}>
-          <ion-icon size="large" name="checkmark-outline"></ion-icon>
+        <button 
+          className="action" 
+          type="button" 
+          title={note.archived ? "Pindahkan" : "Arsipkan"} 
+          onClick={async () => {
+            if (note.archived) {
+              await unarchiveNote(token, id); // keluar dari arsip
+            } else {
+              await archiveNote(token, id);
+            }
+            nav('/')
+          }}>
+          <ion-icon size="large" name={note.archived ? "arrow-undo-outline" : "archive-outline"}></ion-icon>
         </button>
-        <button className="action" type="button" title="Hapus" onClick={()=>{
-          deleteNote(name)
-          setNotes(getAllNotes())
-          nav('/')}}>
+        <button className="action" type="button" title="Hapus" onClick={handleDelete}>
           <ion-icon size="large" name="trash-outline"></ion-icon>
         </button>
       </div>

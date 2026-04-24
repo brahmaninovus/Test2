@@ -1,14 +1,44 @@
-import React, { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useMemo, useEffect, useState, useContext } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import NoteList from '../components/NoteList'
+import { getNotes, getArchivedNotes } from '../utils/api'
+import { AuthContext } from '../contexts/AuthContext'
 
-const MainPage = ({ note, type }) => {
+const MainPage = ({ type }) => {
   const [search, setSearch] = useState('')
+  const [notes, setNotes] = useState([])
+  const [loading, setLoading] = useState(true)
   const nav = useNavigate()
-  const filteredNotes = useMemo(
-    () => note.filter((item) => item.title.toLowerCase().includes(search.toLowerCase())),
-    [note, search]
-  )
+  const { token } = useContext(AuthContext)
+  const location = useLocation()
+
+  useEffect(() => {
+    async function fetchNotes() {
+      setLoading(true)
+
+      const response =
+        type === 'archived'
+          ? await getArchivedNotes(token)
+          : await getNotes(token)
+
+      if (response.status === 'success') {
+        setNotes(response.data)
+      }
+
+      setLoading(false)
+    }
+
+  fetchNotes()
+}, [token, type])
+
+  const filteredNotes = useMemo(() => {
+    return notes
+      .filter(note =>
+        note.title.toLowerCase().includes(search.toLowerCase())
+      )
+  }, [notes, type, search])
+
+  if (loading) return <p>Loading...</p>
 
   return (
     <section className='homepage'>
@@ -24,7 +54,7 @@ const MainPage = ({ note, type }) => {
         />
       </section>
       <section className='notes-list'>
-        <NoteList notes={filteredNotes} />
+        <NoteList notes={filteredNotes} type={type} />
       </section>
       <div className='homepage__action'>
         <button className='action' title='Tambah' type='button' onClick={() => nav('/notes/new')}>

@@ -1,23 +1,78 @@
-import React, { useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { getAllNotes } from './utils/local-data';
+import React, { useContext } from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import Header from './components/Header';
-import NoteInput from './pages/NoteInput';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
 import MainPage from './pages/MainPage';
 import NotePage from './pages/NotePage';
+import NoteInput from './pages/NoteInput';
+import { AuthContext } from './contexts/AuthContext';
+
+function PrivateRoute({ children }) {
+  const { token } = useContext(AuthContext);
+  return token ? children : <Navigate to="/login" />;
+}
 
 function App() {
-  const [notes, setNotes] = useState(getAllNotes());
+  const { token } = useContext(AuthContext);
 
   return (
     <div className="app-container">
       <Header />
+
       <main>
         <Routes>
-          <Route path="/" element={<MainPage note={notes} type="active" />} />
-          <Route path="/archives" element={<MainPage note={notes} type="archived" />} />
-          <Route path="/notes/new" element={<NoteInput setNotes={setNotes} />} />
-          <Route path="/notes/:name" element={<NotePage notes={notes} setNotes={setNotes} />} />
+          {/* PUBLIC ROUTES */}
+          {!token && (
+            <>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+            </>
+          )}
+
+          {/* PRIVATE ROUTES */}
+          {token && (
+            <>
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute>
+                    <MainPage />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/archives"
+                element={
+                  <PrivateRoute>
+                    <MainPage type="archived" />
+                  </PrivateRoute>
+                }
+              />
+
+               <Route
+                path="/notes/new"
+                element={
+                  <PrivateRoute>
+                    <NoteInput />
+                  </PrivateRoute>
+                }
+               />
+
+              <Route
+                path="/notes/:id"
+                element={
+                  <PrivateRoute>
+                    <NotePage />
+                  </PrivateRoute>
+                }
+              />
+            </>
+          )}
+
+          {/* fallback */}
+          <Route path="*" element={<Navigate to={token ? "/" : "/login"} />} />
         </Routes>
       </main>
     </div>

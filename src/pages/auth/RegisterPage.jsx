@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { register } from '../api/notes-api';
+import { register } from "../../utils/api";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,16 +12,38 @@ export default function RegisterPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setError('');
+
+    if (!name || !email || !password) {
+      setError('Semua field wajib diisi');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password minimal 6 karakter');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Password dan Confirm Password tidak sama');
       return;
     }
 
-    const response = await register({ name, email, password });
-    if (!response.error) {
-      navigate('/login');
-    } else {
-      setError(response.message);
+    try {
+      const response = await register({ name, email, password });
+
+      console.log('REGISTER RESPONSE:', response);
+
+      if (!response.error) {
+        localStorage.setItem('name', name);
+        alert('Registrasi berhasil! Silakan login.');
+        navigate('/login');
+      } else {
+        setError(response.message);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Terjadi kesalahan saat register');
     }
   }
 

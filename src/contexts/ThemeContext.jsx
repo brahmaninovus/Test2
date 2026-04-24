@@ -8,12 +8,12 @@ export function ThemeProvider({ children }) {
   );
 
   useEffect(() => {
-    document.body.className = theme;
+    document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
 
   function toggleTheme() {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   }
 
   return (
